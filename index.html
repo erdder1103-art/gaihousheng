@@ -69,6 +69,7 @@
       box-shadow: 0 12px 26px rgba(0,0,0,0.22);
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
     }
     .btnImg:active{ transform: translateY(1px); }
   </style>
@@ -108,12 +109,22 @@
          onclick="return trackLeadAndGo(event, this.href);">
         <img class="btnImg"
              src="static/picture/10月9日14-e1760416892526-1024x303.png"
-             alt="加LINE領優惠" loading="eager" decoding="async">
+             alt="立即領取優惠"
+             loading="eager"
+             decoding="async">
       </a>
     </main>
   </div>
 
   <script>
+    function makeEventId(prefix){
+      return (
+        prefix + "_" +
+        Date.now() + "_" +
+        Math.random().toString(36).slice(2)
+      );
+    }
+
     function trackLeadAndGo(e, url) {
       // ✅ 4 小時內同設備只算一次 Lead（直播 4H 一場最適合）
       const windowMs = 4 * 60 * 60 * 1000;
@@ -122,21 +133,39 @@
       const now = Date.now();
       const alreadySent = lastTs && (now - lastTs) < windowMs;
 
-      if (!alreadySent) {
+      if (e && e.preventDefault) e.preventDefault();
+
+      const hasFbq = (typeof fbq === "function");
+
+      // 未來你做 CAPI 一樣用這個 eventId 去重
+      const eventId = makeEventId("lead");
+
+      if (!alreadySent && hasFbq) {
         try {
-          if (typeof fbq === "function") {
-            fbq("track", "Lead", {
-              content_name: "Click_GoToLink",
-              destination: "301.gaifun888.tw",
-              link_path: "LGAI16802"
-            });
-          }
+          // ① 主要事件：Lead（拿來做廣告優化）
+          fbq("track", "Lead", {
+            content_name: "Click_GoToLink",
+            destination: "301.gaifun888.tw",
+            link_path: "LGAI16802",
+            brand: "點點富婆",
+            button_name: "GoToSite"
+          }, { eventID: eventId });
+
+          // ② 輔助事件：ClickOut（判斷流量品質用）
+          fbq("trackCustom", "ClickOut", {
+            destination: "301.gaifun888.tw",
+            link_path: "LGAI16802",
+            brand: "點點富婆"
+          });
+
         } catch (err) {}
         localStorage.setItem(key, String(now));
       }
 
-      if (e && e.preventDefault) e.preventDefault();
-      setTimeout(() => { window.location.href = url; }, alreadySent ? 0 : 200);
+      setTimeout(() => {
+        window.location.href = url;
+      }, alreadySent ? 0 : 220);
+
       return false;
     }
   </script>
