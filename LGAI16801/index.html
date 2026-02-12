@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>瘋狂上頭葵</title>
-
   <link rel="icon" href="favicon.ico" sizes="any">
 
   <style>
@@ -46,18 +45,9 @@
     .hero img{
       width: 100%;
       display: block;
-      max-height: 68vh;
-      height: 68vh;
+      height: min(72vh, 760px);
       object-fit: cover;
       object-position: center top;
-    }
-
-    @media (min-width: 769px){
-      .hero img{
-        height: auto;
-        max-height: none;
-        object-fit: contain;
-      }
     }
 
     .btnImg{
@@ -70,6 +60,7 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
       cursor: pointer;
+      transition: transform .08s ease;
     }
     .btnImg:active{ transform: translateY(1px); }
   </style>
@@ -105,11 +96,12 @@
         <img src="static/picture/10月9日19-1024x1024.png" alt="" loading="eager" decoding="async">
       </section>
 
-      <a href="https://301.gaifun888.tw/LGAI16801"
+      <a href="https://lin.ee/cMFZNLY"
+         rel="noopener noreferrer"
          onclick="return trackLeadAndGo(event, this.href);">
         <img class="btnImg"
              src="static/picture/10月9日14-e1760416892526-1024x303.png"
-             alt="立即領取優惠"
+             alt="立即加入LINE"
              loading="eager"
              decoding="async">
       </a>
@@ -117,16 +109,18 @@
   </div>
 
   <script>
+    const BRAND = "瘋狂上頭葵";
+    const DEST_DOMAIN = "lin.ee";
+    const LINK_FULL = "https://lin.ee/cMFZNLY";
+    const LINK_PATH = "cMFZNLY";
+    const CURRENCY = "TWD";
+    const LEAD_VALUE = 1.00;
+
     function makeEventId(prefix){
-      return (
-        prefix + "_" +
-        Date.now() + "_" +
-        Math.random().toString(36).slice(2)
-      );
+      return prefix + "_" + Date.now() + "_" + Math.random().toString(36).slice(2);
     }
 
     function trackLeadAndGo(e, url) {
-      // ✅ 4 小時內同設備只算一次 Lead（直播 4H 一場最適合）
       const windowMs = 4 * 60 * 60 * 1000;
       const key = "lead_sent_ts";
       const lastTs = parseInt(localStorage.getItem(key) || "0", 10);
@@ -136,36 +130,36 @@
       if (e && e.preventDefault) e.preventDefault();
 
       const hasFbq = (typeof fbq === "function");
+      const eventId = makeEventId("clk");
 
-      // 未來你做 CAPI 一樣用這個 eventId 去重
-      const eventId = makeEventId("lead");
+      // ✅ ClickOut：每次點都送
+      if (hasFbq) {
+        try {
+          fbq("trackCustom", "ClickOut", {
+            destination: DEST_DOMAIN,
+            link_path: LINK_PATH,
+            brand: BRAND,
+            button_name: "Official_LINE"
+          }, { eventID: eventId });
+        } catch (err) {}
+      }
 
+      // ✅ Lead：4小時內只算一次（補 value/currency）
       if (!alreadySent && hasFbq) {
         try {
-          // ① 主要事件：Lead（拿來做廣告優化）
           fbq("track", "Lead", {
-            content_name: "Click_GoToLink",
-            destination: "301.gaifun888.tw",
-            link_path: "LGAI16801",
-            brand: "瘋狂上頭葵",
-            button_name: "GoToSite"
+            value: LEAD_VALUE,
+            currency: CURRENCY,
+            destination: DEST_DOMAIN,
+            link_path: LINK_PATH,
+            brand: BRAND,
+            button_name: "Official_LINE"
           }, { eventID: eventId });
-
-          // ② 輔助事件：ClickOut（判斷流量品質用）
-          fbq("trackCustom", "ClickOut", {
-            destination: "301.gaifun888.tw",
-            link_path: "LGAI16801",
-            brand: "瘋狂上頭葵"
-          });
-
         } catch (err) {}
         localStorage.setItem(key, String(now));
       }
 
-      setTimeout(() => {
-        window.location.href = url;
-      }, alreadySent ? 0 : 220);
-
+      setTimeout(() => { window.location.href = url; }, 220);
       return false;
     }
   </script>
