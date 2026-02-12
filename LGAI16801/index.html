@@ -1,0 +1,173 @@
+﻿<!doctype html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>瘋狂上頭葵</title>
+
+  <link rel="icon" href="favicon.ico" sizes="any">
+
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body{
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Microsoft JhengHei", sans-serif;
+      background: url("static/image/bg.jpg") center / cover no-repeat;
+    }
+
+    .stage{
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      padding-top: calc(12px + env(safe-area-inset-top));
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+
+    .wrap{
+      width: 100%;
+      max-width: 480px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero{
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.25);
+    }
+
+    .hero img{
+      width: 100%;
+      display: block;
+      max-height: 68vh;
+      height: 68vh;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    @media (min-width: 769px){
+      .hero img{
+        height: auto;
+        max-height: none;
+        object-fit: contain;
+      }
+    }
+
+    .btnImg{
+      display: block;
+      width: 78%;
+      max-width: 320px;
+      margin: 0 auto;
+      border-radius: 18px;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.22);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+    }
+    .btnImg:active{ transform: translateY(1px); }
+  </style>
+
+  <!-- Meta Pixel Code (ID: 1675424893826650) -->
+  <script>
+    !function(f,b,e,v,n,t,s){
+      if(f.fbq) return;
+      n=f.fbq=function(){ n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments) };
+      if(!f._fbq) f._fbq=n;
+      n.push=n; n.loaded=!0; n.version='2.0';
+      n.queue=[];
+      t=b.createElement(e); t.async=!0;
+      t.src=v;
+      s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s);
+    }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', '1675424893826650');
+    fbq('track', 'PageView');
+  </script>
+
+  <noscript>
+    <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1675424893826650&ev=PageView&noscript=1" />
+  </noscript>
+</head>
+
+<body>
+  <div class="stage">
+    <main class="wrap">
+      <section class="hero">
+        <img src="static/picture/10月9日19-1024x1024.png" alt="" loading="eager" decoding="async">
+      </section>
+
+      <a href="https://301.gaifun888.tw/LGAI16801"
+         onclick="return trackLeadAndGo(event, this.href);">
+        <img class="btnImg"
+             src="static/picture/10月9日14-e1760416892526-1024x303.png"
+             alt="立即領取優惠"
+             loading="eager"
+             decoding="async">
+      </a>
+    </main>
+  </div>
+
+  <script>
+    function makeEventId(prefix){
+      return (
+        prefix + "_" +
+        Date.now() + "_" +
+        Math.random().toString(36).slice(2)
+      );
+    }
+
+    function trackLeadAndGo(e, url) {
+      // ✅ 4 小時內同設備只算一次 Lead（直播 4H 一場最適合）
+      const windowMs = 4 * 60 * 60 * 1000;
+      const key = "lead_sent_ts";
+      const lastTs = parseInt(localStorage.getItem(key) || "0", 10);
+      const now = Date.now();
+      const alreadySent = lastTs && (now - lastTs) < windowMs;
+
+      if (e && e.preventDefault) e.preventDefault();
+
+      const hasFbq = (typeof fbq === "function");
+
+      // 未來你做 CAPI 一樣用這個 eventId 去重
+      const eventId = makeEventId("lead");
+
+      if (!alreadySent && hasFbq) {
+        try {
+          // ① 主要事件：Lead（拿來做廣告優化）
+          fbq("track", "Lead", {
+            content_name: "Click_GoToLink",
+            destination: "301.gaifun888.tw",
+            link_path: "LGAI16801",
+            brand: "點點富婆",
+            button_name: "GoToSite"
+          }, { eventID: eventId });
+
+          // ② 輔助事件：ClickOut（判斷流量品質用）
+          fbq("trackCustom", "ClickOut", {
+            destination: "301.gaifun888.tw",
+            link_path: "LGAI16801",
+            brand: "點點富婆"
+          });
+
+        } catch (err) {}
+        localStorage.setItem(key, String(now));
+      }
+
+      setTimeout(() => {
+        window.location.href = url;
+      }, alreadySent ? 0 : 220);
+
+      return false;
+    }
+  </script>
+</body>
+</html>
