@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
@@ -80,7 +80,7 @@
     }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
     fbq('init', '1675424893826650');
-    fbq('track', 'PageView');
+    fbq('trackSingle', '1675424893826650', 'PageView');
   </script>
 
   <noscript>
@@ -121,45 +121,44 @@
     }
 
     function trackLeadAndGo(e, url) {
-      const windowMs = 4 * 60 * 60 * 1000;
-      const key = "lead_sent_ts";
-      const lastTs = parseInt(localStorage.getItem(key) || "0", 10);
-      const now = Date.now();
-      const alreadySent = lastTs && (now - lastTs) < windowMs;
-
       if (e && e.preventDefault) e.preventDefault();
 
       const hasFbq = (typeof fbq === "function");
       const eventId = makeEventId("clk");
+      const params = {
+        value: LEAD_VALUE,
+        currency: CURRENCY,
+        content_name: "line_click",
+        destination: DEST_DOMAIN,
+        link_path: LINK_PATH,
+        brand: BRAND,
+        button_name: "Official_LINE"
+      };
+      const opt = { eventID: eventId };
 
-      // ✅ ClickOut：每次點都送
+      // 主轉換事件：每次有效點擊 LINE 都送 Contact
       if (hasFbq) {
         try {
-          fbq("trackCustom", "ClickOut", {
-            destination: DEST_DOMAIN,
-            link_path: LINK_PATH,
-            brand: BRAND,
-            button_name: "Official_LINE"
-          }, { eventID: eventId });
+          fbq("trackSingle", "1675424893826650", "Contact", params, opt);
         } catch (err) {}
       }
 
-      // ✅ Lead：4小時內只算一次（補 value/currency）
-      if (!alreadySent && hasFbq) {
+      // 輔助分析事件：保留外連點擊數據
+      if (hasFbq) {
         try {
-          fbq("track", "Lead", {
-            value: LEAD_VALUE,
-            currency: CURRENCY,
-            destination: DEST_DOMAIN,
-            link_path: LINK_PATH,
-            brand: BRAND,
-            button_name: "Official_LINE"
-          }, { eventID: eventId });
+          fbq("trackCustom", "ClickOut", params, opt);
         } catch (err) {}
-        localStorage.setItem(key, String(now));
       }
 
-      setTimeout(() => { window.location.href = url; }, 220);
+      // 額外保留更直觀的事件名稱，方便後台分析
+      if (hasFbq) {
+        try {
+          fbq("trackCustom", "LineClick", params, opt);
+        } catch (err) {}
+      }
+
+      // 稍微延長跳轉，降低事件尚未送出就離站的機率
+      setTimeout(() => { window.location.href = url; }, 400);
       return false;
     }
   </script>
