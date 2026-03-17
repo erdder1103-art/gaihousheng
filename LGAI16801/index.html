@@ -1,166 +1,71 @@
-﻿<!doctype html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>瘋狂上頭葵</title>
-  <link rel="icon" href="favicon.ico" sizes="any">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>瘋狂上頭葵</title>
 
-  <style>
-    :root { color-scheme: light; }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
-    body{
-      margin: 0;
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, "Microsoft JhengHei", sans-serif;
-      background: url("static/image/bg.jpg") center / cover no-repeat;
-    }
+fbq('init','1675424893826650');
 
-    .stage{
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-      padding-top: calc(12px + env(safe-area-inset-top));
-      padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    }
+fbq('trackSingle','1675424893826650','PageView');
+</script>
 
-    .wrap{
-      width: 100%;
-      max-width: 480px;
-      display: grid;
-      gap: 14px;
-    }
+<noscript>
+<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1675424893826650&ev=PageView&noscript=1"/>
+</noscript>
 
-    .hero{
-      width: 100%;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.25);
-    }
-
-    .hero img{
-      width: 100%;
-      display: block;
-      height: min(72vh, 760px);
-      object-fit: cover;
-      object-position: center top;
-    }
-
-    .btnImg{
-      display: block;
-      width: 78%;
-      max-width: 320px;
-      margin: 0 auto;
-      border-radius: 18px;
-      box-shadow: 0 12px 26px rgba(0,0,0,0.22);
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      cursor: pointer;
-      transition: transform .08s ease;
-    }
-    .btnImg:active{ transform: translateY(1px); }
-  </style>
-
-  <!-- Meta Pixel Code (ID: 1675424893826650) -->
-  <script>
-    !function(f,b,e,v,n,t,s){
-      if(f.fbq) return;
-      n=f.fbq=function(){ n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments) };
-      if(!f._fbq) f._fbq=n;
-      n.push=n; n.loaded=!0; n.version='2.0';
-      n.queue=[];
-      t=b.createElement(e); t.async=!0;
-      t.src=v;
-      s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s);
-    }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
-
-    fbq('init', '1675424893826650');
-    fbq('trackSingle', '1675424893826650', 'PageView');
-  </script>
-
-  <noscript>
-    <img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=1675424893826650&ev=PageView&noscript=1" />
-  </noscript>
+<style>
+body{margin:0;background:#000;font-family:system-ui,-apple-system,"PingFang TC","Noto Sans TC",Arial;}
+.wrapper{display:flex;justify-content:center;align-items:center;min-height:100vh;}
+.frame{position:relative;width:100%;max-width:420px;aspect-ratio:9/16;overflow:hidden;}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.logo{position:absolute;top:-5%;left:50%;transform:translateX(-50%);width:60%;}
+.ip{position:absolute;bottom:30%;left:50%;transform:translateX(-50%);width:90%;}
+.btnWrapper{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);width:80%;}
+.btn{width:100%;cursor:pointer;display:block;animation:breath 1.8s ease-in-out infinite;}
+@keyframes breath{0%{transform:scale(1);}50%{transform:scale(1.08);}100%{transform:scale(1);}}
+</style>
 </head>
 
 <body>
-  <div class="stage">
-    <main class="wrap">
-      <section class="hero">
-        <img src="static/picture/10月9日19-1024x1024.png" alt="" loading="eager" decoding="async">
-      </section>
+<div class="wrapper"><div class="frame">
+<img src="assets/bg.jpg" class="bg">
+<img src="assets/logo.png" class="logo">
+<img src="assets/ip.png" class="ip">
+<div class="btnWrapper">
+  <a href="#" id="lineBtn"><img src="assets/btn.png" class="btn"></a>
+</div>
+</div></div>
 
-      <a href="https://lin.ee/cMFZNLY"
-         rel="noopener noreferrer"
-         onclick="return trackLeadAndGo(event, this.href);">
-        <img class="btnImg"
-             src="static/picture/10月9日14-e1760416892526-1024x303.png"
-             alt="立即加入LINE"
-             loading="eager"
-             decoding="async">
-      </a>
-    </main>
-  </div>
+<script>
+function uuidv4(){return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);return v.toString(16);});}
+let clicked=false;
 
-  <script>
-    const BRAND = "瘋狂上頭葵";
-    const DEST_DOMAIN = "lin.ee";
-    const LINK_FULL = "https://lin.ee/cMFZNLY";
-    const LINK_PATH = "cMFZNLY";
-    const CURRENCY = "TWD";
-    const LEAD_VALUE = 1.00;
+document.getElementById("lineBtn").addEventListener("click",function(e){
+  e.preventDefault();
+  if(clicked) return;
+  clicked=true;
 
-    function makeEventId(prefix){
-      return prefix + "_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-    }
+  const eventId=uuidv4();
+  const params={content_name:'line_click'};
+  const opt={eventID:eventId};
 
-    function trackLeadAndGo(e, url) {
-      if (e && e.preventDefault) e.preventDefault();
+  // 主轉換事件：LINE點擊
+  try{fbq('trackSingle','1675424893826650','Contact',params,opt);}catch(e){}
 
-      const hasFbq = (typeof fbq === "function");
-      const eventId = makeEventId("clk");
-      const params = {
-        value: LEAD_VALUE,
-        currency: CURRENCY,
-        content_name: "line_click",
-        destination: DEST_DOMAIN,
-        link_path: LINK_PATH,
-        brand: BRAND,
-        button_name: "Official_LINE"
-      };
-      const opt = { eventID: eventId };
+  // 輔助分析事件：自訂事件
+  try{fbq('trackCustom','LineClick',params);}catch(e){}
 
-      // 主轉換事件：每次有效點擊 LINE 都送 Contact
-      if (hasFbq) {
-        try {
-          fbq("trackSingle", "1675424893826650", "Contact", params, opt);
-        } catch (err) {}
-      }
-
-      // 輔助分析事件：保留外連點擊數據
-      if (hasFbq) {
-        try {
-          fbq("trackCustom", "ClickOut", params, opt);
-        } catch (err) {}
-      }
-
-      // 額外保留更直觀的事件名稱，方便後台分析
-      if (hasFbq) {
-        try {
-          fbq("trackCustom", "LineClick", params, opt);
-        } catch (err) {}
-      }
-
-      // 稍微延長跳轉，降低事件尚未送出就離站的機率
-      setTimeout(() => { window.location.href = url; }, 400);
-      return false;
-    }
-  </script>
+  // 稍微延長跳轉時間，避免事件還沒送出就離站
+  setTimeout(function(){window.location.href="https://line.me/R/ti/p/@794qnnum";},400);
+});
+</script>
 </body>
 </html>
