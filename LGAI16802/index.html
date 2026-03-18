@@ -116,7 +116,8 @@ body{
     <img src="assets/ip.png" class="ip" alt="">
 
     <div class="btnWrapper">
-      <a href="https://lin.ee/jzABNet" id="lineBtn" aria-label="加入 LINE">
+      <!-- href 放真連結，JS 掛掉也能跳 -->
+      <a href="https://lin.ee/jzABNet" id="lineBtn" aria-label="加入 LINE" rel="noopener">
         <img src="assets/btn.png" class="btn" alt="立即加入 LINE">
       </a>
     </div>
@@ -158,9 +159,11 @@ body{
   }
 
   function goToLine(){
-    window.location.href = LINE_URL;
+    // 用 replace 避免返回頁面又重複點擊
+    window.location.replace(LINE_URL);
   }
 
+  // iOS/部分瀏覽器從外部 App 回來時，pageshow 會觸發（含 bfcache）
   window.addEventListener('pageshow', function(){
     resetButtonState();
   });
@@ -177,17 +180,28 @@ body{
 
     const eventId = createEventId();
     const params = {
-      content_name: 'line_click'
+      action_source: 'website',
+      contact_method: 'line',
+      event_source_url: window.location.href
     };
-    const options = {
-      eventID: eventId
-    };
+    const options = { eventID: eventId };
 
+    // 主要優化事件：Contact（後台選「聯絡」）
     try{
       if (typeof fbq === 'function') {
         fbq('trackSingle', PIXEL_ID, 'Contact', params, options);
+
+        // 輔助分析事件：自訂（不影響你用 Contact 優化）
+        fbq('trackSingleCustom', PIXEL_ID, 'LineClick', params, options);
       }
     }catch(err){}
+
+    // （可選）如果你未來要自己記錄點擊 log，可用 sendBeacon 備援
+    // try{
+    //   if (navigator.sendBeacon) {
+    //     navigator.sendBeacon('/line-click-log', JSON.stringify({eventId, ts: Date.now()}));
+    //   }
+    // }catch(err){}
 
     redirectTimer = setTimeout(goToLine, REDIRECT_DELAY);
   });
