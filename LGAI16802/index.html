@@ -34,77 +34,27 @@ fbq('trackSingle', window.APP_CONFIG.PIXEL_ID, 'PageView');
 </script>
 
 <noscript>
-  <img
-    height="1"
-    width="1"
-    style="display:none"
-    alt=""
-    src="https://www.facebook.com/tr?id=26304479809157137&ev=PageView&noscript=1"
-  />
+  <img height="1" width="1" style="display:none" alt=""
+    src="https://www.facebook.com/tr?id=26304479809157137&ev=PageView&noscript=1"/>
 </noscript>
 
 <style>
-body{
-  margin:0;
-  background:#000;
-  font-family:system-ui,-apple-system,"PingFang TC","Noto Sans TC",Arial;
-}
-.wrapper{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  min-height:100dvh;
-}
-.frame{
-  position:relative;
-  width:100%;
-  max-width:420px;
-  aspect-ratio:9/16;
-  overflow:hidden;
-}
-.bg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-.logo{
-  position:absolute;
-  top:5%;
-  left:10%;
-  transform:translateX(10%);
-  width:60%;
-}
-.ip{
-  position:absolute;
-  bottom:30%;
-  left:50%;
-  transform:translateX(-50%);
-  width:90%;
-}
-.btnWrapper{
-  position:absolute;
-  bottom:3%;
-  left:50%;
-  transform:translateX(-50%);
-  width:80%;
-}
-#lineBtn{
-  display:block;
-}
-.btn{
-  width:100%;
-  cursor:pointer;
-  display:block;
-  animation:breath 1.8s ease-in-out infinite;
-}
-@keyframes breath{
-  0%{transform:scale(1);}
-  50%{transform:scale(1.08);}
-  100%{transform:scale(1);}
-}
+body{margin:0;background:#000;font-family:system-ui,-apple-system,"PingFang TC","Noto Sans TC",Arial;}
+.wrapper{display:flex;justify-content:center;align-items:center;min-height:100vh;min-height:100dvh;}
+.frame{position:relative;width:100%;max-width:420px;aspect-ratio:9/16;overflow:hidden;}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.logo{position:absolute;top:5%;left:10%;transform:translateX(10%);width:60%;}
+.ip{position:absolute;bottom:30%;left:50%;transform:translateX(-50%);width:90%;}
+.btnWrapper{position:absolute;bottom:3%;left:50%;transform:translateX(-50%);width:80%;}
+#lineBtn{display:block;}
+.btn{width:100%;cursor:pointer;display:block;animation:breath 1.8s ease-in-out infinite;}
+@keyframes breath{0%{transform:scale(1);}50%{transform:scale(1.08);}100%{transform:scale(1);}}
+
+.tap{position:absolute;display:block;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.tap-bg{inset:0;}
+.tap-logo{top:5%;left:10%;width:60%;height:20%;transform:translateX(10%);}
+.tap-ip{bottom:30%;left:50%;width:90%;height:22%;transform:translateX(-50%);}
+.tap-btn{bottom:3%;left:50%;width:80%;height:12%;transform:translateX(-50%);}
 </style>
 </head>
 
@@ -116,11 +66,16 @@ body{
     <img src="assets/ip.png" class="ip" alt="">
 
     <div class="btnWrapper">
-      <!-- href 放真連結，JS 掛掉也能跳 -->
-      <a href="https://lin.ee/jzABNet" id="lineBtn" aria-label="加入 LINE" rel="noopener">
-        <img src="assets/btn.png" class="btn" alt="立即加入 LINE">
+      <a href="https://lin.ee/jzABNet" class="goLine" data-area="btn" id="lineBtn" rel="noopener" aria-label="">
+        <img src="assets/btn.png" class="btn" alt="">
       </a>
     </div>
+
+    <a href="https://lin.ee/jzABNet" class="goLine tap tap-bg" data-area="bg" rel="noopener" aria-label=""></a>
+    <a href="https://lin.ee/jzABNet" class="goLine tap tap-logo" data-area="logo" rel="noopener" aria-label=""></a>
+    <a href="https://lin.ee/jzABNet" class="goLine tap tap-ip" data-area="ip" rel="noopener" aria-label=""></a>
+    <a href="https://lin.ee/jzABNet" class="goLine tap tap-btn" data-area="btnOverlay" rel="noopener" aria-label=""></a>
+
   </div>
 </div>
 
@@ -130,80 +85,69 @@ body{
   const LINE_URL = window.APP_CONFIG.LINE_URL;
   const REDIRECT_DELAY = window.APP_CONFIG.REDIRECT_DELAY;
 
-  const lineBtn = document.getElementById('lineBtn');
-  if (!lineBtn) return;
+  const links = document.querySelectorAll('.goLine');
+  if (!links || !links.length) return;
 
-  let isRedirecting = false;
+  let clicked = false;
   let redirectTimer = null;
 
   function createEventId(){
-    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-      return window.crypto.randomUUID();
-    }
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
-      const r = Math.random() * 16 | 0;
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
+      const r = Math.random()*16|0;
       const v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   }
 
-  function resetButtonState(){
-    isRedirecting = false;
-
+  function resetState(){
+    clicked = false;
     if (redirectTimer) {
       clearTimeout(redirectTimer);
       redirectTimer = null;
     }
-
-    lineBtn.style.pointerEvents = '';
+    links.forEach(function(a){ a.style.pointerEvents = ''; });
   }
 
-  function goToLine(){
-    // 用 replace 避免返回頁面又重複點擊
+  function go(){
     window.location.replace(LINE_URL);
   }
 
-  // iOS/部分瀏覽器從外部 App 回來時，pageshow 會觸發（含 bfcache）
-  window.addEventListener('pageshow', function(){
-    resetButtonState();
-  });
-
-  lineBtn.addEventListener('click', function(e){
-    if (isRedirecting) {
-      e.preventDefault();
-      return;
-    }
-
-    e.preventDefault();
-    isRedirecting = true;
-    lineBtn.style.pointerEvents = 'none';
-
+  function fireEvents(area){
     const eventId = createEventId();
+    const options = { eventID: eventId };
     const params = {
       action_source: 'website',
       contact_method: 'line',
+      click_area: area || 'unknown',
       event_source_url: window.location.href
     };
-    const options = { eventID: eventId };
 
-    // 主要優化事件：Contact（後台選「聯絡」）
     try{
       if (typeof fbq === 'function') {
         fbq('trackSingle', PIXEL_ID, 'Contact', params, options);
-
-        // 輔助分析事件：自訂（不影響你用 Contact 優化）
         fbq('trackSingleCustom', PIXEL_ID, 'LineClick', params, options);
       }
-    }catch(err){}
+    }catch(e){}
+  }
 
-    // （可選）如果你未來要自己記錄點擊 log，可用 sendBeacon 備援
-    // try{
-    //   if (navigator.sendBeacon) {
-    //     navigator.sendBeacon('/line-click-log', JSON.stringify({eventId, ts: Date.now()}));
-    //   }
-    // }catch(err){}
+  window.addEventListener('pageshow', function(){
+    resetState();
+  });
 
-    redirectTimer = setTimeout(goToLine, REDIRECT_DELAY);
+  links.forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      if (clicked) return;
+      clicked = true;
+
+      links.forEach(function(x){ x.style.pointerEvents = 'none'; });
+
+      const area = a.getAttribute('data-area') || 'unknown';
+      fireEvents(area);
+
+      redirectTimer = setTimeout(go, REDIRECT_DELAY);
+    });
   });
 })();
 </script>
