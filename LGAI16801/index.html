@@ -8,7 +8,6 @@
 <script>
 window.APP_CONFIG = {
   PIXEL_ID: '1675424893826650',
-  LINE_URL: 'https://lin.ee/jzABNet',
   REDIRECT_DELAY: 700
 };
 
@@ -126,7 +125,6 @@ body{
 <script>
 (function(){
   const PIXEL_ID = window.APP_CONFIG.PIXEL_ID;
-  const LINE_URL = window.APP_CONFIG.LINE_URL;
   const REDIRECT_DELAY = window.APP_CONFIG.REDIRECT_DELAY;
 
   const lineBtn = document.getElementById('lineBtn');
@@ -158,7 +156,7 @@ body{
   }
 
   function goToLine(){
-    window.location.href = LINE_URL;
+    window.location.href = lineBtn.href;
   }
 
   window.addEventListener('pageshow', function(){
