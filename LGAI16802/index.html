@@ -6,20 +6,41 @@
 <title>點點富婆</title>
 
 <script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
-(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+window.APP_CONFIG = {
+  PIXEL_ID: '26304479809157137',
+  LINE_URL: 'https://lin.ee/jzABNet',
+  REDIRECT_DELAY: 700
+};
 
-fbq('init','26304479809157137');
+!function(f,b,e,v,n,t,s){
+  if(f.fbq) return;
+  n=f.fbq=function(){
+    n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments);
+  };
+  if(!f._fbq) f._fbq=n;
+  n.push=n;
+  n.loaded=!0;
+  n.version='2.0';
+  n.queue=[];
+  t=b.createElement(e);
+  t.async=!0;
+  t.src=v;
+  s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s);
+}(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-fbq('trackSingle','26304479809157137','PageView');
+fbq('init', window.APP_CONFIG.PIXEL_ID);
+fbq('trackSingle', window.APP_CONFIG.PIXEL_ID, 'PageView');
 </script>
 
 <noscript>
-<img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=26304479809157137&ev=PageView&noscript=1"/>
+  <img
+    height="1"
+    width="1"
+    style="display:none"
+    alt=""
+    src="https://www.facebook.com/tr?id=26304479809157137&ev=PageView&noscript=1"
+  />
 </noscript>
 
 <style>
@@ -33,6 +54,7 @@ body{
   justify-content:center;
   align-items:center;
   min-height:100vh;
+  min-height:100dvh;
 }
 .frame{
   position:relative;
@@ -69,6 +91,9 @@ body{
   transform:translateX(-50%);
   width:80%;
 }
+#lineBtn{
+  display:block;
+}
 .btn{
   width:100%;
   cursor:pointer;
@@ -85,53 +110,88 @@ body{
 
 <body>
 <div class="wrapper">
-<div class="frame">
+  <div class="frame">
+    <img src="assets/bg.jpg" class="bg" alt="">
+    <img src="assets/logo.png" class="logo" alt="">
+    <img src="assets/ip.png" class="ip" alt="">
 
-<img src="assets/bg.jpg" class="bg">
-<img src="assets/logo.png" class="logo">
-<img src="assets/ip.png" class="ip">
-
-<div class="btnWrapper">
-  <a href="#" id="lineBtn">
-    <img src="assets/btn.png" class="btn">
-  </a>
-</div>
-
-</div>
+    <div class="btnWrapper">
+      <a href="https://lin.ee/jzABNet" id="lineBtn" aria-label="加入 LINE">
+        <img src="assets/btn.png" class="btn" alt="立即加入 LINE">
+      </a>
+    </div>
+  </div>
 </div>
 
 <script>
-function uuidv4(){
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
-    var r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);
-    return v.toString(16);
+(function(){
+  const PIXEL_ID = window.APP_CONFIG.PIXEL_ID;
+  const LINE_URL = window.APP_CONFIG.LINE_URL;
+  const REDIRECT_DELAY = window.APP_CONFIG.REDIRECT_DELAY;
+
+  const lineBtn = document.getElementById('lineBtn');
+  if (!lineBtn) return;
+
+  let isRedirecting = false;
+  let redirectTimer = null;
+
+  function createEventId(){
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      return window.crypto.randomUUID();
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  function resetButtonState(){
+    isRedirecting = false;
+
+    if (redirectTimer) {
+      clearTimeout(redirectTimer);
+      redirectTimer = null;
+    }
+
+    lineBtn.style.pointerEvents = '';
+  }
+
+  function goToLine(){
+    window.location.href = LINE_URL;
+  }
+
+  window.addEventListener('pageshow', function(){
+    resetButtonState();
   });
-}
 
-let clicked=false;
+  lineBtn.addEventListener('click', function(e){
+    if (isRedirecting) {
+      e.preventDefault();
+      return;
+    }
 
-document.getElementById("lineBtn").addEventListener("click",function(e){
-  e.preventDefault();
-  if(clicked) return;
-  clicked=true;
+    e.preventDefault();
+    isRedirecting = true;
+    lineBtn.style.pointerEvents = 'none';
 
-  const eventId=uuidv4();
+    const eventId = createEventId();
+    const params = {
+      content_name: 'line_click'
+    };
+    const options = {
+      eventID: eventId
+    };
 
-  const params={content_name:'line_click'};
-  const opt={eventID:eventId};
+    try{
+      if (typeof fbq === 'function') {
+        fbq('trackSingle', PIXEL_ID, 'Contact', params, options);
+      }
+    }catch(err){}
 
-  try{
-    fbq('trackSingle','26304479809157137','Contact',params,opt);
-  }catch(e){}
-
-  try{
-    fbq('trackCustom','LineClick',params);
-  }catch(e){}
-
-  setTimeout(function(){
-    window.location.href="https://lin.ee/jzABNet";
-  },400);
-});
+    redirectTimer = setTimeout(goToLine, REDIRECT_DELAY);
+  });
+})();
 </script>
 
 </body>
